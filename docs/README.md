@@ -1,43 +1,77 @@
-# 21 輪回測觀察
+# 實驗流程說明
 
-資料來源：[experiments.csv](experiments.csv)。本輪分析涵蓋 `0001` 到 `0021` 共 21 次實驗，期間固定標的與回測區間，主要調整移動平均、動能期數、低訊號曝險與高波動扣減幅度。
+這份文件專注說明自動實驗流程，以及 `research.py`、`trading_strategy.py`、pi agent 和 `data/` 目錄之間的分工。
 
-## 圖表
+## 整體架構
 
-![年化報酬走勢](plots/annualized_return_by_round.svg)
+`research.py` 是流程控制器，負責一輪一輪安排回測、判斷是否停止，以及在需要下一組參數時呼叫 pi agent。`trading_strategy.py` 只負責根據輸入參數完成單輪策略回測；pi agent 則只負責讀取歷史結果、提出下一輪參數。
 
-![最大回撤與年化報酬](plots/max_drawdown_vs_annualized_return.svg)
+```mermaid
+flowchart TD
+	A[research.py 安排下一輪] --> B[trading_strategy.py 執行回測]
+	B --> C[寫入 data/輪次結果]
+	C --> D[research.py 檢查績效與停止條件]
+	D -->|尚未停止| E[pi agent 分析歷史結果]
+	E --> F[寫入 data/next_params.json]
+	F --> A
+	D -->|達停止條件| G[結束實驗]
+```
 
-![Sharpe 與年化報酬](plots/sharpe_vs_annualized_return.svg)
+## 單輪實驗生命週期
 
-![交易次數與年化報酬](plots/trade_count_vs_annualized_return.svg)
+每一輪實驗都從 `research.py` 取得下一個輪次開始。若 `data/next_params.json` 已存在，`research.py` 會把它視為本輪候選策略參數，交給 `trading_strategy.py` 執行。回測完成後，本輪的參數、交易紀錄、逐日指標與績效指標會寫入新的輪次資料夾，總表也會同步更新。
 
-## 主要結論
+```mermaid
+sequenceDiagram
+	participant R as research.py
+	participant N as data/next_params.json
+	participant T as trading_strategy.py
+	participant O as data/0001, data/0002, ...
+	participant A as pi agent
 
-年化報酬確實從前幾輪高點往下走，但這不是單純策略變差，而是參數搜尋逐步把策略推向更保守的曝險設定。第 `0001` 輪年化報酬最高，達 `11.84%`，但最大回撤也最深，為 `-29.56%`。後續提高 `vol_cut`、降低 `low_weight` 之後，年化報酬多數落在 `10%` 到 `11%` 區間，但最大回撤明顯改善到約 `-15%` 到 `-19%`。
+	R->>N: 讀取上一輪建議參數
+	R->>T: 啟動單輪回測
+	T->>O: 寫入 params、metrics、trades、indicators
+	R->>O: 讀取 metrics 並比較最佳分數
+	alt 指標仍有改善或尚未達停滯上限
+		R->>A: 請 agent 分析既有結果
+		A->>O: 讀取最近輪次與總表
+		A->>N: 寫入下一輪參數
+	else 連續多輪沒有足夠改善
+		R-->>R: 停止實驗迴圈
+	end
+```
 
-目前綜合分數最佳的是第 `0016` 輪：`ma_months=10`、`momentum_months=7`、`low_weight=0.0`、`vol_cut=0.7`。它的年化報酬是 `10.67%`，低於第 `0001` 輪，但最大回撤改善到 `-15.59%`，Sharpe 達 `0.879`，交易次數也降到 `78`。這代表第 `0016` 輪是目前較好的風險控制版本。
+## pi agent 用在那些地方
 
-若只看 Sharpe，第 `0020` 輪最突出：`ma_months=10`、`momentum_months=7`、`low_weight=0.3`、`vol_cut=0.6`，年化報酬 `11.22%`，Sharpe `0.893`，但最大回撤回到 `-19.12%`，交易次數也升到 `93`。它是目前比較接近「拿回報酬，但仍比早期低回撤」的折衷版本。
+pi agent 不負責跑回測，也不直接判定本輪分數是否達到停止條件。它的工作集中在「看完結果後，決定下一輪要測什麼」。
 
-## 參數取捨
+pi agent 主要使用在三個位置：
 
-- `vol_cut` 和年化報酬呈明顯負相關，相關係數約 `-0.78`。高波動時扣曝險越重，風險越低，但報酬也越容易被壓低。
-- 平均曝險和年化報酬高度正相關，相關係數約 `0.89`。這表示年化報酬下降的主要原因是曝險降低，而不是訊號完全失效。
-- `low_weight` 從 `0.3` 降到 `0.0` 後，最大回撤改善明顯，但年化報酬也同步下降。這個參數控制「趨勢與動能都不成立時是否仍保留底倉」，是報酬與防守之間的核心槓桿。
-- 交易次數與年化報酬呈正相關，約 `0.65`。較保守版本降低交易次數，但也可能錯過重新進場與恢復曝險的機會。
+1. 讀取歷史實驗結果：比較 `data/experiments.csv` 與最近幾輪的 `summary.txt`、`params.json`、`metrics.json`、`trades.csv`。
+2. 分析策略表現：透過 `analyze_results.py` 摘要年化報酬、最大跌幅、Sharpe、交易次數、曝險與最大回撤附近狀態。
+3. 產生下一輪參數：依照 `AGENTS.md` 的規則，一次只調整一個小方向，最後寫入 `data/next_params.json`。
 
-## 候選基準
+```mermaid
+flowchart LR
+	X[data/experiments.csv] --> A[pi agent 分析]
+	Y[data/最近輪次結果] --> A
+	Z[analyze_results.py 摘要] --> A
+	G[AGENTS.md 實驗規則] --> A
+	A --> H{下一輪假設}
+	H -->|可用參數表達| N[data/next_params.json]
+	H -->|參數不足才需要| C[調整 trading_strategy.py]
+```
 
-| 角色 | 輪次 | 參數重點 | 年化報酬 | 最大回撤 | Sharpe | 交易次數 | 解讀 |
-| --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 高報酬基準 | `0001` | `vol_cut=0.2`, `low_weight=0.3`, `momentum_months=12` | `11.84%` | `-29.56%` | `0.842` | `95` | 報酬最高，但風險過高。 |
-| 風險控制最佳 | `0016` | `vol_cut=0.7`, `low_weight=0.0`, `momentum_months=7` | `10.67%` | `-15.59%` | `0.879` | `78` | 綜合分數最佳，回撤控制最乾淨。 |
-| 報酬折衷候選 | `0020` | `vol_cut=0.6`, `low_weight=0.3`, `momentum_months=7` | `11.22%` | `-19.12%` | `0.893` | `93` | Sharpe 最佳，報酬回升，但曝險與交易次數較高。 |
-| 低交易版本 | `0021` | `vol_cut=0.8`, `low_weight=0.0`, `ma_months=12` | `10.24%` | `-18.39%` | `0.860` | `74` | 交易最少，但報酬沒有補償額外保守度。 |
+## 資料檔案如何串起流程
 
-## 下一輪方向
+- `data/<四位數輪次>/params.json`：記錄本輪實際使用的策略參數，方便追溯某個結果是怎麼跑出來的。
+- `data/<四位數輪次>/metrics.json`：提供 `research.py` 判斷分數是否改善，也提供 pi agent 比較不同輪次。
+- `data/<四位數輪次>/trades.csv`：讓 pi agent 檢查交易是否過度頻繁，或是否集中在特定年份。
+- `data/<四位數輪次>/indicators.csv`：保留逐日訊號、曝險、報酬與 equity curve，需要細查回撤或訊號失效時使用。
+- `data/experiments.csv`：所有輪次的總表，是比較參數與績效關係的主要資料來源。
+- `data/next_params.json`：pi agent 與下一輪回測之間的交接檔；它只描述下一輪策略參數，不描述流程參數。
 
-若目標是改善「年化報酬越來越低」這件事，建議不要直接回到第 `0001` 輪那種高曝險設定。比較穩的下一輪假設是從第 `0016` 輪出發，只把 `vol_cut` 從 `0.7` 降到 `0.6`，`low_weight` 先維持 `0.0`。這可以測試降低高波動扣減是否能拿回部分報酬，同時避免直接恢復底倉造成回撤擴大。
+## 停止條件
 
-若下一輪年化報酬仍沒有改善，優先檢查高波動期間是否太頻繁降低曝險，以及 `momentum_months=7` 是否只是在特定年份有效。若年化改善但回撤明顯惡化，再考慮把 `low_weight` 維持在 `0.0`，只微調 `vol_cut` 或波動門檻，而不要同時放寬多個風險參數。
+`research.py` 會持續追蹤指定績效指標的最佳值。若本輪分數沒有比既有最佳值多出足夠改善幅度，就會累計一次停滯；停滯次數達到上限時，實驗迴圈結束。這個停止條件由 `research.py` 控制，pi agent 只在尚未停止時提供下一輪參數建議。
