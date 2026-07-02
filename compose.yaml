@@ -1,0 +1,17 @@
+services:
+  pi:
+    image: ghcr.io/phate334/uv-pi:0.80.3
+    working_dir: /workspace
+    volumes:
+      - ./.pi:/workspace/.pi
+      - ./AGENTS.md:/workspace/AGENTS.md:ro
+      - ./analyze_results.py:/workspace/analyze_results.py:ro
+      - ./trading_strategy.py:/workspace/trading_strategy.py
+      - ./data:/workspace/data
+      - ./pyproject.toml:/workspace/pyproject.toml:ro
+      - ./uv.lock:/workspace/uv.lock:ro
+      - uv-pi-cache:/root/.cache/uv
+    command: [ "AGENTS.md" ]
+
+volumes:
+  uv-pi-cache:
