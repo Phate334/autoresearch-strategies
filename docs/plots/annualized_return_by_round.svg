@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="620" viewBox="0 0 900 620" role="img">
+<style>
+  svg { background: #faf7ef; color: #1f2933; font-family: ui-sans-serif, system-ui, sans-serif; }
+  .title { font-size: 22px; font-weight: 700; fill: #1f2933; }
+  .label { font-size: 15px; font-weight: 650; fill: #344054; }
+  .tick { font-size: 12px; fill: #667085; }
+  .plot-bg { fill: #fffdf8; stroke: #d0d5dd; }
+  .grid { stroke: #e4e7ec; stroke-width: 1; }
+  .axis { stroke: #475467; stroke-width: 1.4; }
+    .line { fill: none; stroke: #0f766e; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+  .point { fill: #0f766e; stroke: #ffffff; stroke-width: 1.5; }
+  .round-label { font-size: 11px; fill: #475467; }
+</style>
+<text x="450.0" y="34" text-anchor="middle" class="title">annualized_return by round</text>
+<rect x="96" y="64" width="764" height="464" class="plot-bg"/>
+<line x1="96.00" y1="64" x2="96.00" y2="528" class="grid"/>
+<text x="96.00" y="556" text-anchor="middle" class="tick">-1</text>
+<line x1="287.00" y1="64" x2="287.00" y2="528" class="grid"/>
+<text x="287.00" y="556" text-anchor="middle" class="tick">5</text>
+<line x1="478.00" y1="64" x2="478.00" y2="528" class="grid"/>
+<text x="478.00" y="556" text-anchor="middle" class="tick">11</text>
+<line x1="669.00" y1="64" x2="669.00" y2="528" class="grid"/>
+<text x="669.00" y="556" text-anchor="middle" class="tick">17</text>
+<line x1="860.00" y1="64" x2="860.00" y2="528" class="grid"/>
+<text x="860.00" y="556" text-anchor="middle" class="tick">23</text>
+<line x1="96" y1="528.00" x2="860" y2="528.00" class="grid"/>
+<text x="82" y="532.00" text-anchor="end" class="tick">9.4%</text>
+<line x1="96" y1="412.00" x2="860" y2="412.00" class="grid"/>
+<text x="82" y="416.00" text-anchor="end" class="tick">10.1%</text>
+<line x1="96" y1="296.00" x2="860" y2="296.00" class="grid"/>
+<text x="82" y="300.00" text-anchor="end" class="tick">10.7%</text>
+<line x1="96" y1="180.00" x2="860" y2="180.00" class="grid"/>
+<text x="82" y="184.00" text-anchor="end" class="tick">11.4%</text>
+<line x1="96" y1="64.00" x2="860" y2="64.00" class="grid"/>
+<text x="82" y="68.00" text-anchor="end" class="tick">12.0%</text>
+<line x1="96" y1="528" x2="860" y2="528" class="axis"/>
+<line x1="96" y1="64" x2="96" y2="528" class="axis"/>
+<polyline points="148.69,96.00 181.62,197.88 214.55,257.87 247.48,319.78 280.41,363.72 313.34,194.07 346.28,274.21 379.21,304.92 412.14,340.37 445.07,331.59 478.00,340.31 510.93,402.52 543.86,359.25 576.79,388.14 609.72,496.00 642.66,303.61 675.59,427.07 708.52,371.55 741.45,388.14 774.38,206.56 807.31,380.68" class="line"/>
+<text x="478.0" y="592" text-anchor="middle" class="label">round</text>
+<text transform="translate(28 296.0) rotate(-90)" text-anchor="middle" class="label">annualized_return</text>
+<circle cx="148.69" cy="96.00" r="5.5" class="point"><title>round 0001
+annualized_return: 11.8%</title></circle>
+<text x="156.69" y="88.00" class="round-label">0001</text>
+<circle cx="181.62" cy="197.88" r="5.5" class="point"><title>round 0002
+annualized_return: 11.3%</title></circle>
+<text x="189.62" y="189.88" class="round-label">0002</text>
+<circle cx="214.55" cy="257.87" r="5.5" class="point"><title>round 0003
+annualized_return: 10.9%</title></circle>
+<text x="222.55" y="249.87" class="round-label">0003</text>
+<circle cx="247.48" cy="319.78" r="5.5" class="point"><title>round 0004
+annualized_return: 10.6%</title></circle>
+<text x="255.48" y="311.78" class="round-label">0004</text>
+<circle cx="280.41" cy="363.72" r="5.5" class="point"><title>round 0005
+annualized_return: 10.3%</title></circle>
+<text x="288.41" y="355.72" class="round-label">0005</text>
+<circle cx="313.34" cy="194.07" r="5.5" class="point"><title>round 0006
+annualized_return: 11.3%</title></circle>
+<text x="321.34" y="186.07" class="round-label">0006</text>
+<circle cx="346.28" cy="274.21" r="5.5" class="point"><title>round 0007
+annualized_return: 10.8%</title></circle>
+<text x="354.28" y="266.21" class="round-label">0007</text>
+<circle cx="379.21" cy="304.92" r="5.5" class="point"><title>round 0008
+annualized_return: 10.7%</title></circle>
+<text x="387.21" y="296.92" class="round-label">0008</text>
+<circle cx="412.14" cy="340.37" r="5.5" class="point"><title>round 0009
+annualized_return: 10.5%</title></circle>
+<text x="420.14" y="332.37" class="round-label">0009</text>
+<circle cx="445.07" cy="331.59" r="5.5" class="point"><title>round 0010
+annualized_return: 10.5%</title></circle>
+<text x="453.07" y="323.59" class="round-label">0010</text>
+<circle cx="478.00" cy="340.31" r="5.5" class="point"><title>round 0011
+annualized_return: 10.5%</title></circle>
+<text x="486.00" y="332.31" class="round-label">0011</text>
+<circle cx="510.93" cy="402.52" r="5.5" class="point"><title>round 0012
+annualized_return: 10.1%</title></circle>
+<text x="518.93" y="394.52" class="round-label">0012</text>
+<circle cx="543.86" cy="359.25" r="5.5" class="point"><title>round 0013
+annualized_return: 10.4%</title></circle>
+<text x="551.86" y="351.25" class="round-label">0013</text>
+<circle cx="576.79" cy="388.14" r="5.5" class="point"><title>round 0014
+annualized_return: 10.2%</title></circle>
+<text x="584.79" y="380.14" class="round-label">0014</text>
+<circle cx="609.72" cy="496.00" r="5.5" class="point"><title>round 0015
+annualized_return: 9.6%</title></circle>
+<text x="617.72" y="488.00" class="round-label">0015</text>
+<circle cx="642.66" cy="303.61" r="5.5" class="point"><title>round 0016
+annualized_return: 10.7%</title></circle>
+<text x="650.66" y="295.61" class="round-label">0016</text>
+<circle cx="675.59" cy="427.07" r="5.5" class="point"><title>round 0017
+annualized_return: 10.0%</title></circle>
+<text x="683.59" y="419.07" class="round-label">0017</text>
+<circle cx="708.52" cy="371.55" r="5.5" class="point"><title>round 0018
+annualized_return: 10.3%</title></circle>
+<text x="716.52" y="363.55" class="round-label">0018</text>
+<circle cx="741.45" cy="388.14" r="5.5" class="point"><title>round 0019
+annualized_return: 10.2%</title></circle>
+<text x="749.45" y="380.14" class="round-label">0019</text>
+<circle cx="774.38" cy="206.56" r="5.5" class="point"><title>round 0020
+annualized_return: 11.2%</title></circle>
+<text x="782.38" y="198.56" class="round-label">0020</text>
+<circle cx="807.31" cy="380.68" r="5.5" class="point"><title>round 0021
+annualized_return: 10.2%</title></circle>
+<text x="815.31" y="372.68" class="round-label">0021</text>
+</svg>
