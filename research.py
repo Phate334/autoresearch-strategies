@@ -65,7 +65,6 @@ def main() -> None:
                 "run",
                 "--rm",
                 args.service,
-                "AGENTS.md",
             ]
         )
 

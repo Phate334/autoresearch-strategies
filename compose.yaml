@@ -11,7 +11,10 @@ services:
       - ./pyproject.toml:/workspace/pyproject.toml:ro
       - ./uv.lock:/workspace/uv.lock:ro
       - uv-pi-cache:/root/.cache/uv
-    command: [ "AGENTS.md" ]
+    command:
+      - pi
+      - --print
+      - 依照 AGENTS.md 的指示，分析既有實驗結果並寫入 ./data/next_params.json。
 
 volumes:
   uv-pi-cache:
