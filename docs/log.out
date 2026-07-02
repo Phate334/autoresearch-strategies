@@ -1,0 +1,627 @@
+wrote round 0001 to data/0001
+ Container autoresearch-strategies-pi-run-e4cdeee89af6 Creating 
+ Container autoresearch-strategies-pi-run-e4cdeee89af6 Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 0.89ms
+Checked in 0.00ms
+分析結果顯示，第一輪實驗 (0001) 的年化報酬率為 11.8%，但最大回撤 (Max Drawdown) 高達 -29.5%，主要發生在 2008 年金融海嘯期間。
+
+目前 `vol_cut` 設定為 0.2，代表在高波動期間僅扣除 20% 的曝險。為了降低最大回撤，我決定嘗試更激進的波動率控制，將 `vol_cut` 提高至 0.4，以期在市場極端波動時能更有效地降低曝險。
+
+已將參數寫入 `./data/next_params.json`：
+```json
+{
+  "vol_cut": 0.4
+}
+```
+wrote round 0002 to data/0002
+ Container autoresearch-strategies-pi-run-e79279f19c90 Creating 
+ Container autoresearch-strategies-pi-run-e79279f19c90 Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 1ms
+Checked in 0.01ms
+分析結果顯示，將 `vol_cut` 從 0.2 增加到 0.4 顯著降低了最大回撤（-29.6% $\rightarrow$ -25.1%），且僅微幅降低年化報酬（11.8% $\rightarrow$ 11.3%），使得綜合分數（composite score）有所提升。
+
+為了進一步驗證風險控制的邊際效益，下一輪實驗將 `vol_cut` 稍微調高至 **0.5**，其餘參數保持不變。
+
+已將參數寫入 `./data/next_params.json`。
+wrote round 0003 to data/0003
+ Container autoresearch-strategies-pi-run-86248d78f52e Creating 
+ Container autoresearch-strategies-pi-run-86248d78f52e Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 0.91ms
+Checked in 0.00ms
+分析結果如下：
+
+1. **數據比較**：
+   - **0001 (`vol_cut=0.2`)**: 報酬 11.8%, 最大回撤 -29.5%, 夏普 0.842, 分數 -0.188
+   - **0002 (`vol_cut=0.4`)**: 報酬 11.2%, 最大回撤 -25.1%, 夏普 0.854, 分數 -0.148
+   - **0003 (`vol_cut=0.5`)**: 報酬 10.9%, 最大回撤 -24.1%, 夏普 0.851, 分數 -0.142
+
+2. **分析觀察**：
+   - 提高 `vol_cut` 顯著降低了最大回撤（從 -29.5% $\rightarrow$ -24.1%），且綜合分數（`composite_score`）隨之提升。
+   - 雖然年化報酬略有下降，但風險調整後的回報（夏普值）保持穩定甚至微幅提升。
+   - 從 0002 到 0003 的分數進步幅度（0.006）明顯小於 0001 到 0002 的幅度（0.039），顯示 `vol_cut` 的邊際效益在遞減。
+   - 最大回撤發生在 2008 年金融海嘯期間。
+
+3. **調整策略**：
+   - 目前 `vol_cut` 的調整方向正確，能有效控制回撤。
+   - 為了確認該參數的極限，下一輪將 `vol_cut` 小幅增加至 `0.6`，觀察是否能進一步降低回撤而不會過度犧牲報酬。
+
+已將參數寫入 `./data/next_params.json`。
+wrote round 0004 to data/0004
+ Container autoresearch-strategies-pi-run-73e28ad5c5fa Creating 
+ Container autoresearch-strategies-pi-run-73e28ad5c5fa Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 1ms
+Checked in 0.01ms
+分析了最近四輪的實驗結果：
+
+- **0002輪** (`vol_cut: 0.4`)：年化報酬 11.3%，最大回撤 -25.1%，夏普值 0.855，綜合分數 -0.148。
+- **0003輪** (`vol_cut: 0.5`)：年化報酬 10.9%，最大回撤 -24.2%，夏普值 0.852，綜合分數 -0.142。
+- **0004輪** (`vol_cut: 0.6`)：年化報酬 10.6%，最大回撤 -23.6%，夏普值 0.844，綜合分數 -0.141。
+
+觀察發現，提高 `vol_cut` 能有效降低最大回撤並微幅提升綜合分數，但同時會導致年化報酬與夏普值下降。目前的交易頻率（約每週 4-5 次/年）非常低，有調整空間。
+
+為了在保持低回撤的同時嘗試提升報酬率，下一輪我決定將趨勢判斷的靈敏度提高，將 `ma_months` 從 10 個月縮短至 8 個月，並維持 `vol_cut: 0.6` 以保留回撤控制效果。
+
+已將參數寫入 `./data/next_params.json`：
+```json
+{
+  "ma_months": 8,
+  "momentum_months": 12,
+  "high_weight": 1.0,
+  "mid_weight": 0.7,
+  "low_weight": 0.3,
+  "vol_window_short": 20,
+  "vol_window_long": 60,
+  "vol_lookback": 252,
+  "vol_quantile": 0.8,
+  "vol_cut": 0.6,
+  "trading_days": 252
+}
+```
+wrote round 0005 to data/0005
+ Container autoresearch-strategies-pi-run-345e480f9579 Creating 
+ Container autoresearch-strategies-pi-run-345e480f9579 Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 0.91ms
+Checked in 0.00ms
+分析既有實驗結果：
+
+- 輪次 0001 到 0004 的主要變動是增加 `vol_cut`（0.2 $\rightarrow$ 0.4 $\rightarrow$ 0.5 $\rightarrow$ 0.6），結果顯示最大回撤（Max Drawdown）持續降低（-0.296 $\rightarrow$ -0.236），綜合分數（Composite Score）持續提升（-0.188 $\rightarrow$ -0.141），但年化報酬率也隨之下降（0.118 $\rightarrow$ 0.106）。
+- 輪次 0005 嘗試將 `ma_months` 從 10 降至 8，結果報酬與綜合分數均下降，顯示此方向不佳。
+- 目前最佳結果為輪次 0004。
+
+**調整策略：**
+目前 `vol_cut` 的增加雖然改善了回撤，但對報酬有明顯負面影響。為了尋找更好的平衡點，我決定在維持輪次 0004 的參數基礎上，嘗試微調 `momentum_months` 從 12 降至 10，觀察是否能提升捕捉趨勢的靈敏度並改善報酬。
+
+**下一輪參數：**
+- `ma_months`: 10 (維持 0004)
+- `momentum_months`: 10 (由 12 調整為 10)
+- `high_weight`: 1.0
+- `mid_weight`: 0.7
+- `low_weight`: 0.3
+- `vol_window_short`: 20
+- `vol_window_long`: 60
+- `vol_lookback`: 252
+- `vol_quantile`: 0.8
+- `vol_cut`: 0.6 (維持 0004)
+- `trading_days`: 252
+
+已將上述參數寫入 `./data/next_params.json`。
+wrote round 0006 to data/0006
+ Container autoresearch-strategies-pi-run-f5c75163938d Creating 
+ Container autoresearch-strategies-pi-run-f5c75163938d Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 0.95ms
+Checked in 0.01ms
+分析結果如下：
+
+1.  **歷史績效分析**：
+    *   **0004 輪** (`ma_months`: 10, `momentum_months`: 12)：Score -0.1411, Ann Return 10.58%, Sharpe 0.8445
+    *   **0005 輪** (`ma_months`: 8, `momentum_months`: 12)：Score -0.1441, Ann Return 10.33%, Sharpe 0.8292 $\rightarrow$ 降低 `ma_months` 導致表現下降。
+    *   **0006 輪** (`ma_months`: 10, `momentum_months`: 10)：Score -0.1306, Ann Return 11.29%, Sharpe 0.8893 $\rightarrow$ 縮短 `momentum_months` 顯著提升績效。
+
+2.  **最大回撤分析**：
+    *   最大回撤發生在 2025-01-07 至 2025-04-09。
+    *   檢查 0006 輪數據發現，回撤期間大部分時間 `high_vol` 為 0，直到 4 月才觸發。這表示目前的波動率過濾參數（`vol_quantile`: 0.8, `vol_cut`: 0.6）無法有效捕捉該次下跌，調整波動率參數短期內可能效果有限。
+    *   然而，縮短動能週期（12 $\rightarrow$ 10）能提升報酬與夏普值，顯示較短的週期能更靈敏地反應趨勢變化。
+
+3.  **下一輪策略**：
+    *   延續縮短動能週期的方向，將 `momentum_months` 從 10 進一步下調至 8。
+    *   保持其他參數與 0006 輪一致。
+
+已將以下參數寫入 `./data/next_params.json`：
+```json
+{
+  "ma_months": 10,
+  "momentum_months": 8,
+  "high_weight": 1.0,
+  "mid_weight": 0.7,
+  "low_weight": 0.3,
+  "vol_window_short": 20,
+  "vol_window_long": 60,
+  "vol_lookback": 252,
+  "vol_quantile": 0.8,
+  "vol_cut": 0.6,
+  "trading_days": 252
+}
+```
+wrote round 0007 to data/0007
+ Container autoresearch-strategies-pi-run-9c91d12ac53d Creating 
+ Container autoresearch-strategies-pi-run-9c91d12ac53d Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 1ms
+Checked in 0.01ms
+分析既有實驗結果如下：
+
+1.  **績效比較**：
+    *   **0006 輪**：年化報酬 11.29%，最大回撤 -23.63%，夏普值 0.889，綜合得分 -0.130。
+    *   **0007 輪**：年化報酬 10.84%，最大回撤 -19.12%，夏普值 0.862，綜合得分 -0.088。
+    *   **分析**：0007 輪雖然年化報酬微幅下降（約 0.4%），但最大回撤顯著改善（降低了約 4.5%），因此綜合得分最高。
+
+2.  **參數變動觀察**：
+    *   0006 $\to$ 0007 的主要變動是 `momentum_months` 從 10 降至 8，這大幅降低了回撤。
+    *   目前交易次數（約 92 次/22年）非常合理，未出現過度交易。
+
+3.  **回撤分析**：
+    *   最新一輪的最大回撤發生在 `2007-07-24` 至 `2008-09-18`（2008 金融海嘯期間）。
+    *   目前的 `vol_cut` 為 0.6，在高波動期間扣除 60% 曝險。
+
+4.  **下一輪策略**：
+    *   為了進一步壓低回撤，嘗試將 `vol_cut` 從 0.6 提高至 0.7，以在極端波動期間更果斷地降低曝險。
+    *   其餘參數維持 0007 輪的最佳設定（`ma_months: 10`, `momentum_months: 8`）。
+
+已將以下參數寫入 `./data/next_params.json`：
+```json
+{
+  "ma_months": 10,
+  "momentum_months": 8,
+  "high_weight": 1.0,
+  "mid_weight": 0.7,
+  "low_weight": 0.3,
+  "vol_window_short": 20,
+  "vol_window_long": 60,
+  "vol_lookback": 252,
+  "vol_quantile": 0.8,
+  "vol_cut": 0.7,
+  "trading_days": 252
+}
+```
+wrote round 0008 to data/0008
+ Container autoresearch-strategies-pi-run-ca8e7b2c5569 Creating 
+ Container autoresearch-strategies-pi-run-ca8e7b2c5569 Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 1ms
+Checked in 0.01ms
+分析結果如下：
+
+1. **近期表現分析**：
+   - **輪次 0006** ($\text{momentum\_months}=10, \text{vol\_cut}=0.6$): $\text{Score} = -0.1305, \text{MDD} = -23.63\%$
+   - **輪次 0007** ($\text{momentum\_months}=8, \text{vol\_cut}=0.6$): $\text{Score} = -0.0886, \text{MDD} = -19.12\%$
+   - **輪次 0008** ($\text{momentum\_months}=8, \text{vol\_cut}=0.7$): $\text{Score} = -0.0807, \text{MDD} = -18.36\%$
+
+2. **觀察結論**：
+   - 將 `momentum_months` 從 10 降低到 8 顯著改善了綜合分數與最大回撤。
+   - 將 `vol_cut` 從 0.6 提高到 0.7 進一步微幅提升了綜合分數並降低了最大回撤，雖然年化報酬略有下降。
+
+3. **下一輪策略**：
+   - 既然提高 `vol_cut` 能有效降低回撤並提升綜合分數，我決定嘗試將 `vol_cut` 進一步提高至 `0.8`，觀察是否能繼續優化風險收益比。
+   - 其餘參數維持輪次 0008 的設定。
+
+已將參數寫入 `./data/next_params.json`：
+```json
+{
+  "ma_months": 10,
+  "momentum_months": 8,
+  "high_weight": 1.0,
+  "mid_weight": 0.7,
+  "low_weight": 0.3,
+  "vol_window_short": 20,
+  "vol_window_long": 60,
+  "vol_lookback": 252,
+  "vol_quantile": 0.8,
+  "vol_cut": 0.8,
+  "trading_days": 252
+}
+```
+wrote round 0009 to data/0009
+ Container autoresearch-strategies-pi-run-9f42b1713678 Creating 
+ Container autoresearch-strategies-pi-run-9f42b1713678 Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 2ms
+Checked in 0.02ms
+分析結果顯示，最近三輪實驗（0007, 0008, 0009）主要在調整 `vol_cut`：
+- 0007 (`vol_cut: 0.6`): `ann` 0.1083, `dd` -0.1912, `score` -0.0886
+- 0008 (`vol_cut: 0.7`): `ann` 0.1066, `dd` -0.1836, `score` -0.0807
+- 0009 (`vol_cut: 0.8`): `ann` 0.1046, `dd` -0.1836, `score` -0.0832
+
+其中 0008 輪的綜合分數最高，顯示 `vol_cut` 在 0.7 左右能較好地平衡報酬與回撤。
+
+下一輪策略調整：
+在保留 0008 輪較佳的 `vol_cut: 0.7` 基礎上，嘗試將 `ma_months` 從 10 縮短至 8，以測試更靈敏的趨勢判斷是否能提升整體績效。
+
+已將參數寫入 `./data/next_params.json`。
+wrote round 0010 to data/0010
+ Container autoresearch-strategies-pi-run-c8806032e505 Creating 
+ Container autoresearch-strategies-pi-run-c8806032e505 Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 0.87ms
+Checked in 0.00ms
+分析結果如下：
+
+1.  **參數趨勢分析**：
+    *   **`momentum_months`**：從 12 $\rightarrow$ 10 $\rightarrow$ 8，綜合分數明顯提升（0004: -0.141 $\rightarrow$ 0006: -0.130 $\rightarrow$ 0007: -0.088），且最大回撤（MaxDD）顯著降低。
+    *   **`vol_cut`**：在 `ma_months=10`, `momentum_months=8` 的情況下，`vol_cut` 從 0.6 $\rightarrow$ 0.7 $\rightarrow$ 0.8，分數在 0.7 時最高（-0.0807），0.8 時略微下降（-0.0832），但 0.7 成功將 DD 降低至 -18.36%。
+    *   **`ma_months`**：比較 0008 (10) 與 0010 (8)，`ma_months=10` 的表現（Score -0.0807, Sharpe 0.8629）優於 `ma_months=8` (Score -0.0832, Sharpe 0.8527)。
+
+2.  **目前最佳組合**：
+    *   `ma_months: 10`, `momentum_months: 8`, `vol_cut: 0.7` (Round 0008)。
+
+3.  **下一輪策略**：
+    *   由於 `momentum_months` 縮短帶來了明顯的績效提升，下一輪嘗試將 `momentum_months` 進一步調整至 `6`，觀察是否能進一步優化綜合分數或降低回撤。
+
+已將參數寫入 `./data/next_params.json`：
+```json
+{
+  "ma_months": 10,
+  "momentum_months": 6,
+  "vol_cut": 0.7
+}
+```
+wrote round 0011 to data/0011
+ Container autoresearch-strategies-pi-run-c0bf74cf2cd6 Creating 
+ Container autoresearch-strategies-pi-run-c0bf74cf2cd6 Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 1ms
+Checked in 0.01ms
+分析結果如下：
+
+1. **最近三輪對比**：
+   - **輪次 0009**：`ma_months: 10, momentum_months: 8, vol_cut: 0.8` $\rightarrow$ `dd: -18.37%, score: -0.0832`
+   - **輪次 0010**：`ma_months: 8, momentum_months: 8, vol_cut: 0.7` $\rightarrow$ `dd: -18.37%, score: -0.0832`
+   - **輪次 0011**：`ma_months: 10, momentum_months: 6, vol_cut: 0.7` $\rightarrow$ `dd: -21.70%, score: -0.1202`
+
+2. **分析結論**：
+   - 將 `momentum_months` 從 8 縮短至 6（輪次 0011）導致最大回撤明顯增加（-18.37% $\rightarrow$ -21.70%）且綜合分數下降，顯示較短的動能期數在當前策略下風險較高。
+   - 比較 0009 與 0010，`ma_months` 從 10 改為 8，且 `vol_cut` 從 0.8 降至 0.7，回撤保持不變，年化報酬微幅提升。這顯示 `ma_months=8, momentum_months=8` 是一個較穩健的基礎組合。
+   - 回撤 -18.37% 似乎是該參數區間的一個瓶頸。為了嘗試進一步降低回撤，可以嘗試增加 `vol_cut` 以在高波動期間更大幅度地降低曝險。
+
+3. **下一輪策略**：
+   - 採用輪次 0010 的 `ma_months=8` 與 `momentum_months=8`。
+   - 將 `vol_cut` 從 0.7 提高至 0.9，嘗試透過更積極的波動率控制來降低最大回撤。
+
+已將參數寫入 `./data/next_params.json`：
+```json
+{
+  "ma_months": 8,
+  "momentum_months": 8,
+  "vol_cut": 0.9
+}
+```
+wrote round 0012 to data/0012
+ Container autoresearch-strategies-pi-run-e1a9519eab87 Creating 
+ Container autoresearch-strategies-pi-run-e1a9519eab87 Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 0.87ms
+Checked in 0.00ms
+分析既有實驗結果如下：
+
+1. **表現分析**：
+   - 綜合評分（`composite_score`）最高的是 **0008 輪**（-0.0807），其年化報酬約 10.66%，最大回撤為 -18.37%，夏普值 0.86。
+   - 參數組合為：`ma_months: 10`, `momentum_months: 8`, `vol_cut: 0.7`。
+   - 比較 0008 與 0010（`ma_months: 8`）以及 0009（`vol_cut: 0.8`），可見 `ma_months=10` 與 `vol_cut=0.7` 在目前設定下較為理想。
+   - 0011 輪（`momentum_months: 6`）導致最大回撤大幅增加至 -21.7%，顯示動能期數過短會增加風險。
+   - 0012 輪（`vol_cut: 0.9`）雖然維持了回撤，但降低了年化報酬與夏普值，說明過高的波動扣除會損害獲利。
+
+2. **回撤分析**：
+   - 最新一輪的最大回撤發生在 `2025-01-07` 至 `2025-04-09`。
+   - 目前的 `low_weight` 為 0.3，即在趨勢與動能均不成立時仍保持 30% 的曝險。
+
+3. **調整策略**：
+   - 決定以 0008 輪的參數為基底，嘗試降低 `low_weight` 從 0.3 降至 0.1。
+   - 目標是在不損害主趨勢獲利的前提下，進一步降低在市場無方向時的曝險，以嘗試改善最大回撤。
+
+**下一輪參數設定：**
+- `ma_months`: 10
+- `momentum_months`: 8
+- `vol_cut`: 0.7
+- `low_weight`: 0.1 (調整項)
+- 其餘維持 0008 輪設定。
+
+已將參數寫入 `./data/next_params.json`。
+wrote round 0013 to data/0013
+ Container autoresearch-strategies-pi-run-625bcc877da9 Creating 
+ Container autoresearch-strategies-pi-run-625bcc877da9 Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 1ms
+Checked in 0.01ms
+分析結果如下：
+
+1. **績效趨勢**：
+   - 最近三輪中，`0013` 輪次的表現最佳（`composite_score`: -0.0579, `max_drawdown`: -0.1567, `sharpe`: 0.8521）。
+   - 比較 `0011` $\rightarrow$ `0012` $\rightarrow$ `0013`，降低 `low_weight`（從 0.3 降至 0.1）對於降低最大回撤有顯著幫助。
+   - 參數組合 `ma_months: 10` 與 `momentum_months: 8` 目前在回測中表現較穩定。
+
+2. **回撤分析**：
+   - `0013` 輪的最大回撤發生在 `2025-01-07` 至 `2025-04-09`。
+   - 查閱 `indicators.csv` 發現，回撤期間 `trade_weight` 持續為 $1.0$ 且 `high_vol` 為 $0$，這表示策略在趨勢反轉初期未能及時降低曝險。
+   - 由於 `low_weight` 的降低能有效減少在訊號不佳時的損耗，將其進一步調整至 $0.0$ 是合理的嘗試。
+
+3. **下一輪策略**：
+   - 保留 `0013` 的最佳參數組合。
+   - 將 `low_weight` 從 $0.1$ 降低至 $0.0$，以嘗試進一步壓低最大回撤並提升綜合分數。
+
+已將參數寫入 `./data/next_params.json`。
+wrote round 0014 to data/0014
+ Container autoresearch-strategies-pi-run-5cae854e7517 Creating 
+ Container autoresearch-strategies-pi-run-5cae854e7517 Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 1ms
+Checked in 0.01ms
+我分析了最近的實驗結果：
+
+1. **趨勢分析**：
+   - **0012 $\rightarrow$ 0013**：將 `ma_months` 從 8 增加到 10，`vol_cut` 從 0.9 降低到 0.7，`low_weight` 從 0.3 降低到 0.1。結果 `composite_score` 大幅提升（-0.0888 $\rightarrow$ -0.0579），年化報酬與最大回撤均有改善。
+   - **0013 $\rightarrow$ 0014**：將 `low_weight` 從 0.1 降低到 0.0。結果 `composite_score` 進一步提升（-0.0579 $\rightarrow$ -0.0478），主要得益於最大回撤的微幅下降，但年化報酬和夏普值略有下滑。
+
+2. **目前狀態**：
+   - 最新一輪 (0014) 的參數為：`ma_months: 10, momentum_months: 8, vol_cut: 0.7, low_weight: 0.0`。
+   - 最大回撤發生在 2015-04-27 至 2016-05-13。
+
+3. **調整策略**：
+   - 目前的組合已初步穩定回撤，接下來嘗試提升報酬率。
+   - 動能週期目前使用 8 個月，嘗試將 `momentum_months` 增加至 12 個月，以觀察長週期動能是否能捕捉到更強的趨勢並提升年化報酬。
+   - 其他參數維持 0014 輪的較佳設定。
+
+已將下一輪參數寫入 `./data/next_params.json`：
+```json
+{
+  "ma_months": 10,
+  "momentum_months": 12,
+  "high_weight": 1.0,
+  "mid_weight": 0.7,
+  "low_weight": 0.0,
+  "vol_window_short": 20,
+  "vol_window_long": 60,
+  "vol_lookback": 252,
+  "vol_quantile": 0.8,
+  "vol_cut": 0.7,
+  "trading_days": 252
+}
+```
+wrote round 0015 to data/0015
+ Container autoresearch-strategies-pi-run-2967bd6196b9 Creating 
+ Container autoresearch-strategies-pi-run-2967bd6196b9 Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 1ms
+Checked in 0.00ms
+分析結果如下：
+
+1.  **近期表現分析**：
+    - **0013 輪**：`composite_score` -0.0579, 年化報酬 10.36%, 最大回撤 -15.67%, 夏普值 0.852, 交易次數 90。
+    - **0014 輪**：`composite_score` -0.0478, 年化報酬 10.20%, 最大回撤 -15.59%, 夏普值 0.842, 交易次數 78。 (目前最佳)
+    - **0015 輪**：`composite_score` -0.1410, 年化報酬 9.59%, 最大回撤 -23.63%, 夏普值 0.795, 交易次數 80。
+
+2.  **參數變動觀察**：
+    - 從 0013 到 0014，將 `low_weight` 從 0.1 降至 0.0，雖然年化報酬微幅下降，但最大回撤改善且交易次數顯著減少，導致綜合分數提升。
+    - 從 0014 到 0015，將 `momentum_months` 從 8 增加到 12，導致績效大幅下滑，尤其是最大回撤從 -15.6% 惡化至 -23.6%，顯示過長的動能週期在近期市場中反應過慢。
+
+3.  **下一輪策略**：
+    - 既然 `momentum_months=8` 遠優於 12，嘗試將動能週期稍微縮短至 7，以測試更靈敏的訊號是否能提升報酬而不過度增加回撤。
+    - 其餘參數維持 0014 輪的最佳設定。
+
+已將參數寫入 `./data/next_params.json`：
+```json
+{
+  "ma_months": 10,
+  "momentum_months": 7,
+  "high_weight": 1.0,
+  "mid_weight": 0.7,
+  "low_weight": 0.0,
+  "vol_window_short": 20,
+  "vol_window_long": 60,
+  "vol_lookback": 252,
+  "vol_quantile": 0.8,
+  "vol_cut": 0.7,
+  "trading_days": 252
+}
+```
+wrote round 0016 to data/0016
+ Container autoresearch-strategies-pi-run-ba98ad584819 Creating 
+ Container autoresearch-strategies-pi-run-ba98ad584819 Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 0.95ms
+Checked in 0.00ms
+分析結果如下：
+
+1.  **近期實驗趨勢**：
+    - 第 0014 輪 (`momentum_months: 8`) $\rightarrow$ `composite_score: -0.0477`, `ann_return: 10.2%`, `max_drawdown: -15.6%`
+    - 第 0015 輪 (`momentum_months: 12`) $\rightarrow$ `composite_score: -0.1410`, `ann_return: 9.6%`, `max_drawdown: -23.6%` (表現明顯下降，回撤增加)
+    - 第 0016 輪 (`momentum_months: 7`) $\rightarrow$ `composite_score: -0.0393`, `ann_return: 10.7%`, `max_drawdown: -15.6%` (表現最佳)
+
+2.  **分析結論**：
+    - 縮短 `momentum_months` (從 8 $\rightarrow$ 7) 提升了綜合分數與年化報酬，且維持了相同的最大回撤。
+    - 延長 `momentum_months` (至 12) 導致績效惡化。
+    - 檢查第 0016 輪的最大回撤區間 (`2015-04-27` 至 `2016-05-13`)，確認 `vol_cut: 0.7` 在高波動期間有效地將曝險從 1.0 降至 0.3，發揮了風險控制作用。
+
+3.  **下一輪策略**：
+    - 既然縮短動能期數有正面效果，下一輪將嘗試將 `momentum_months` 進一步調降至 `6`，以驗證是否能持續優化報酬。
+    - 其餘參數維持第 0016 輪的最佳設定。
+
+已將參數寫入 `./data/next_params.json`。
+wrote round 0017 to data/0017
+ Container autoresearch-strategies-pi-run-af290bebcceb Creating 
+ Container autoresearch-strategies-pi-run-af290bebcceb Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 1ms
+Checked in 0.01ms
+分析結果顯示，在 `ma_months = 10` 的情況下，`momentum_months = 7` (Round 0016) 的表現優於 `12` (Round 0015) 與 `6` (Round 0017)，其 `composite_score` (-0.0392)、年化報酬 (0.1067) 與最大回撤 (-0.1558) 均為近期最佳。
+
+為了進一步優化，我決定嘗試縮短均線期數 `ma_months` 以提高反應速度。
+
+**調整方向：**
+- `ma_months`: 10 $\rightarrow$ 8
+- `momentum_months`: 保持 7 (近期最佳值)
+- 其餘參數保持不變。
+
+已將下一輪參數寫入 `./data/next_params.json`。
+wrote round 0018 to data/0018
+ Container autoresearch-strategies-pi-run-06dbbc372e8f Creating 
+ Container autoresearch-strategies-pi-run-06dbbc372e8f Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 3ms
+Checked in 0.03ms
+分析既有實驗結果如下：
+
+1.  **近期表現比較**：
+    *   **0016 輪** (`ma_months=10, momentum_months=7`): 年化報酬 10.67%, 最大回撤 -15.59%, 夏普值 0.879, 綜合分數 -0.039。
+    *   **0017 輪** (`ma_months=10, momentum_months=6`): 年化報酬 9.98%, 最大回撤 -17.51%, 夏普值 0.818, 綜合分數 -0.074。 (縮短動能期數導致績效下降)
+    *   **0018 輪** (`ma_months=8, momentum_months=7`): 年化報酬 10.29%, 最大回撤 -17.26%, 夏普值 0.851, 綜合分數 -0.065。 (縮短均線期數導致績效下降)
+
+2.  **分析結論**：
+    在最近的三輪實驗中，0016 輪的表現最佳。對比 0016 與 0017 可知，較長的動能期數（7 vs 6）較佳；對比 0016 與 0018 可知，較長的均線期數（10 vs 8）較佳。
+
+3.  **下一輪策略**：
+    既然增加動能期數有改善趨勢，下一輪嘗試將 `momentum_months` 從 7 增加到 8，同時保持 `ma_months=10` 以及其他參數不變，觀察是否能進一步提升夏普值並降低回撤。
+
+已將參數寫入 `./data/next_params.json`。
+wrote round 0019 to data/0019
+ Container autoresearch-strategies-pi-run-5025d8f8c3f0 Creating 
+ Container autoresearch-strategies-pi-run-5025d8f8c3f0 Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 2ms
+Checked in 0.02ms
+分析結果如下：
+
+1.  **歷史表現分析**：
+    *   最近幾輪中，**第 0016 輪** 表現最佳：年化報酬 10.67%、最大跌幅 -15.59%、夏普值 0.879、綜合分數 -0.039。
+    *   對比第 0018 輪 (`ma_months: 8, momentum_months: 7`) 與第 0016 輪 (`ma_months: 10, momentum_months: 7`)，可見 `ma_months: 10` 的表現較好（報酬更高且跌幅更小）。
+    *   對比第 0019 輪 (`ma_months: 10, momentum_months: 8`) 與第 0016 輪 (`ma_months: 10, momentum_months: 7`)，可見 `momentum_months: 7` 的表現較好。
+
+2.  **參數定調**：
+    *   目前 `ma_months: 10` 和 `momentum_months: 7` 是相對穩定的組合。
+    *   所有最近輪次均使用 `vol_cut: 0.7`。
+
+3.  **下一輪策略**：
+    *   維持最佳的 `ma_months: 10` 與 `momentum_months: 7`。
+    *   嘗試將 `vol_cut` 從 `0.7` 小幅下調至 `0.6`。這將稍微增加高波動時期的曝險，目標是觀察是否能在不顯著增加最大回撤的情況下，提升年化報酬與夏普值。
+
+已將參數寫入 `./data/next_params.json`：
+```json
+{
+  "ma_months": 10,
+  "momentum_months": 7,
+  "vol_cut": 0.6
+}
+```
+wrote round 0020 to data/0020
+ Container autoresearch-strategies-pi-run-f3606d377031 Creating 
+ Container autoresearch-strategies-pi-run-f3606d377031 Created 
+Using CPython 3.13.5 interpreter at: /usr/bin/python3
+Creating virtual environment at: .venv
+Resolved 1 package in 0.85ms
+Checked in 0.00ms
+根據對既有實驗結果的分析：
+
+1.  **表現分析**：
+    *   **0016 輪**具有最佳的綜合分數 (`composite_score: -0.039`) 和較低的最大回撤 (`dd: -0.155`)，其參數為 `ma_months: 10`, `momentum_months: 7`, `low_weight: 0.0`, `vol_cut: 0.7`。
+    *   **0020 輪**雖然年化報酬最高 (`ann: 0.112`) 且夏普值最高 (`sharpe: 0.892`)，但最大回撤明顯增加 (`dd: -0.191`)，導致綜合分數下降 (`-0.082`)。這顯示增加 `low_weight` (0.0 $\rightarrow$ 0.3) 並降低 `vol_cut` (0.7 $\rightarrow$ 0.6) 會增加風險。
+    *   **0019 輪**與 0016 相比，將 `momentum_months` 從 7 增加到 8，報酬略微下降且分數降低，顯示在此設定下 7 個月可能更佳。
+
+2.  **調整策略**：
+    *   為了追求更高的綜合分數（降低回撤），我將維持 `low_weight: 0.0` 以確保在低信號時能有效避險。
+    *   維持 `momentum_months: 7`。
+    *   嘗試將 `ma_months` 從 10 增加到 12，以進一步平滑趨勢判斷並嘗試降低回撤。
+    *   嘗試將 `vol_cut` 從 0.7 提高到 0.8，增強高波動時的避險強度。
+
+**下一輪參數設定 (`./data/next_params.json`)**：
+- `ma_months`: 12
+- `momentum_months`: 7
+- `vol_cut`: 0.8
+- `low_weight`: 0.0
+- 其他參數維持原狀。
+wrote round 0021 to data/0021
++ uv run python trading_strategy.py --data-dir data --round 1
+composite_score=-0.187967 best=-0.187967 stale_rounds=0
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 2 --vol-cut 0.4
+composite_score=-0.148371 best=-0.148371 stale_rounds=0
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 3 --ma-months 10 --momentum-months 12 --high-weight 1.0 --mid-weight 0.7 --low-weight 0.3 --vol-window-short 20 --vol-window-long 60 --vol-lookback 252 --vol-quantile 0.8 --vol-cut 0.5 --trading-days 252
+composite_score=-0.142370 best=-0.142370 stale_rounds=0
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 4 --ma-months 10 --momentum-months 12 --high-weight 1.0 --mid-weight 0.7 --low-weight 0.3 --vol-window-short 20 --vol-window-long 60 --vol-lookback 252 --vol-quantile 0.8 --vol-cut 0.6 --trading-days 252
+composite_score=-0.141095 best=-0.141095 stale_rounds=0
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 5 --ma-months 8 --momentum-months 12 --high-weight 1.0 --mid-weight 0.7 --low-weight 0.3 --vol-window-short 20 --vol-window-long 60 --vol-lookback 252 --vol-quantile 0.8 --vol-cut 0.6 --trading-days 252
+composite_score=-0.144098 best=-0.141095 stale_rounds=1
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 6 --ma-months 10 --momentum-months 10 --high-weight 1.0 --mid-weight 0.7 --low-weight 0.3 --vol-window-short 20 --vol-window-long 60 --vol-lookback 252 --vol-quantile 0.8 --vol-cut 0.6 --trading-days 252
+composite_score=-0.130552 best=-0.130552 stale_rounds=0
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 7 --ma-months 10 --momentum-months 8 --high-weight 1.0 --mid-weight 0.7 --low-weight 0.3 --vol-window-short 20 --vol-window-long 60 --vol-lookback 252 --vol-quantile 0.8 --vol-cut 0.6 --trading-days 252
+composite_score=-0.088636 best=-0.088636 stale_rounds=0
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 8 --ma-months 10 --momentum-months 8 --high-weight 1.0 --mid-weight 0.7 --low-weight 0.3 --vol-window-short 20 --vol-window-long 60 --vol-lookback 252 --vol-quantile 0.8 --vol-cut 0.7 --trading-days 252
+composite_score=-0.080734 best=-0.080734 stale_rounds=0
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 9 --ma-months 10 --momentum-months 8 --high-weight 1.0 --mid-weight 0.7 --low-weight 0.3 --vol-window-short 20 --vol-window-long 60 --vol-lookback 252 --vol-quantile 0.8 --vol-cut 0.8 --trading-days 252
+composite_score=-0.083242 best=-0.080734 stale_rounds=1
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 10 --ma-months 8 --momentum-months 8 --high-weight 1.0 --mid-weight 0.7 --low-weight 0.3 --vol-window-short 20 --vol-window-long 60 --vol-lookback 252 --vol-quantile 0.8 --vol-cut 0.7 --trading-days 252
+composite_score=-0.083246 best=-0.080734 stale_rounds=2
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 11 --ma-months 10 --momentum-months 6 --vol-cut 0.7
+composite_score=-0.120202 best=-0.080734 stale_rounds=3
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 12 --ma-months 8 --momentum-months 8 --vol-cut 0.9
+composite_score=-0.088796 best=-0.080734 stale_rounds=4
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 13 --ma-months 10 --momentum-months 8 --high-weight 1.0 --mid-weight 0.7 --low-weight 0.1 --vol-window-short 20 --vol-window-long 60 --vol-lookback 252 --vol-quantile 0.8 --vol-cut 0.7 --trading-days 252
+composite_score=-0.057904 best=-0.057904 stale_rounds=0
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 14 --ma-months 10 --momentum-months 8 --high-weight 1.0 --mid-weight 0.7 --low-weight 0.0 --vol-window-short 20 --vol-window-long 60 --vol-lookback 252 --vol-quantile 0.8 --vol-cut 0.7 --trading-days 252
+composite_score=-0.047771 best=-0.047771 stale_rounds=0
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 15 --ma-months 10 --momentum-months 12 --high-weight 1.0 --mid-weight 0.7 --low-weight 0.0 --vol-window-short 20 --vol-window-long 60 --vol-lookback 252 --vol-quantile 0.8 --vol-cut 0.7 --trading-days 252
+composite_score=-0.140959 best=-0.047771 stale_rounds=1
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 16 --ma-months 10 --momentum-months 7 --high-weight 1.0 --mid-weight 0.7 --low-weight 0.0 --vol-window-short 20 --vol-window-long 60 --vol-lookback 252 --vol-quantile 0.8 --vol-cut 0.7 --trading-days 252
+composite_score=-0.039275 best=-0.039275 stale_rounds=0
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 17 --ma-months 10 --momentum-months 6 --high-weight 1.0 --mid-weight 0.7 --low-weight 0.0 --vol-window-short 20 --vol-window-long 60 --vol-lookback 252 --vol-quantile 0.8 --vol-cut 0.7 --trading-days 252
+composite_score=-0.073527 best=-0.039275 stale_rounds=1
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 18 --ma-months 8 --momentum-months 7 --high-weight 1.0 --mid-weight 0.7 --low-weight 0.0 --vol-window-short 20 --vol-window-long 60 --vol-lookback 252 --vol-quantile 0.8 --vol-cut 0.7 --trading-days 252
+composite_score=-0.064601 best=-0.039275 stale_rounds=2
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 19 --ma-months 10 --momentum-months 8 --high-weight 1.0 --mid-weight 0.7 --low-weight 0.0 --vol-window-short 20 --vol-window-long 60 --vol-lookback 252 --vol-quantile 0.8 --vol-cut 0.7 --trading-days 252
+composite_score=-0.047771 best=-0.039275 stale_rounds=3
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 20 --ma-months 10 --momentum-months 7 --vol-cut 0.6
+composite_score=-0.082824 best=-0.039275 stale_rounds=4
++ docker compose run --rm pi
++ uv run python trading_strategy.py --data-dir data --round 21 --ma-months 12 --momentum-months 7 --high-weight 1.0 --mid-weight 0.7 --low-weight 0.0 --vol-window-short 20 --vol-window-long 60 --vol-lookback 252 --vol-quantile 0.8 --vol-cut 0.8 --trading-days 252
+composite_score=-0.069526 best=-0.039275 stale_rounds=5
+stop: no composite_score improvement above 0.001 for 5 rounds
