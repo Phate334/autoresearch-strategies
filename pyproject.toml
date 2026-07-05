@@ -1,6 +1,6 @@
 [project]
 name = "autoresearch-strategies"
-version = "0.1.0"
+version = "0.1.1"
 description = "Tiny autoresearch-style strategy sandbox."
 requires-python = ">=3.11"
 dependencies = []
