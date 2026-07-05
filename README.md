@@ -26,7 +26,7 @@ uv run python research.py
 docker compose run --rm pi
 ```
 
-容器會掛入 `AGENTS.md`、`analyze_results.py`、`trading_strategy.py`、`data/`、`pyproject.toml` 和 `uv.lock`。`trading_strategy.py` 與 `data/` 可回寫到本機。
+容器會掛入 `AGENTS.md`、`.agents/skills/`、`analyze_results.py`、`trading_strategy.py`、`data/`、`pyproject.toml` 和 `uv.lock`。`trading_strategy.py` 與 `data/` 可回寫到本機。
 
 容器內執行 Python 腳本請使用 uv：
 
