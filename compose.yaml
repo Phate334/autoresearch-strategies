@@ -3,15 +3,20 @@ services:
     image: ghcr.io/phate334/uv-pi:0.80.3
     working_dir: /workspace
     volumes:
+      # Agent state and cache.
       - uv-pi-cache:/root/.cache/uv
       - ./.pi:/root/.pi
-      - ./.agents/skills:/workspace/.agents/skills:ro
+
+      # Read-only project instructions and runtime files.
       - ./AGENTS.md:/workspace/AGENTS.md:ro
+      - ./.agents/skills:/workspace/.agents/skills:ro
       - ./analyze_results.py:/workspace/analyze_results.py:ro
-      - ./trading_strategy.py:/workspace/trading_strategy.py
-      - ./data:/workspace/data
       - ./pyproject.toml:/workspace/pyproject.toml:ro
       - ./uv.lock:/workspace/uv.lock:ro
+
+      # Writable experiment inputs/outputs.
+      - ./trading_strategy.py:/workspace/trading_strategy.py
+      - ./data:/workspace/data
 
     command:
       - pi
