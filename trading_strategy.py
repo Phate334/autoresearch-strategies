@@ -216,8 +216,9 @@ def write_csv(path: Path, rows: list[dict[str, object]]) -> None:
     if not rows:
         path.write_text("", encoding="utf-8")
         return
+    fieldnames = list(dict.fromkeys(key for row in rows for key in row))
     with open(path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
 
@@ -234,6 +235,112 @@ def update_experiments_csv(data_dir: Path) -> None:
         row.update(payload["metrics"])
         rows.append(row)
     write_csv(data_dir / "experiments.csv", rows)
+
+
+def summary_lines(
+    data_dir: Path,
+    round_number: int,
+    params: Params,
+    rows: list[dict[str, object]],
+    trades: list[dict[str, object]],
+    result: dict[str, object],
+) -> list[str]:
+    history = previous_results(data_dir, round_number)
+    previous = history[-1] if history else None
+    best_return = max(
+        [*history, {"round": round_number, "metrics": result}],
+        key=lambda item: float(item["metrics"]["annualized_return"]),
+    )
+    busiest_year, busiest_trades = busiest_trade_year(trades)
+    drawdown, peak_date, trough_date = worst_drawdown(rows)
+    lines = [
+        f"round: {round_number:04d}",
+        (
+            "params: "
+            f"ma={params.ma_months}, momentum={params.momentum_months}, "
+            f"weights={params.high_weight}/{params.mid_weight}/{params.low_weight}, "
+            f"vol_cut={params.vol_cut}"
+        ),
+        (
+            "return_view: "
+            f"annualized={pct(result['annualized_return'])}; "
+            f"best_return_round={int(best_return['round']):04d} "
+            f"({pct(best_return['metrics']['annualized_return'])})"
+        ),
+        (
+            "risk_view: "
+            f"max_drawdown={pct(result['max_drawdown'])} "
+            f"from {peak_date} to {trough_date}; "
+            f"average_exposure={float(result['average_exposure']):.3f}"
+        ),
+        (
+            "trade_view: "
+            f"{len(trades)} changes; busiest_year={busiest_year} "
+            f"({busiest_trades} changes)"
+        ),
+    ]
+    if previous:
+        previous_metrics = previous["metrics"]
+        lines.append(
+            "vs_previous: "
+            f"return {delta_pct(result['annualized_return'], previous_metrics['annualized_return'])}, "
+            f"drawdown {delta_pct(result['max_drawdown'], previous_metrics['max_drawdown'])}, "
+            f"trades {int(result['trade_count']) - int(previous_metrics['trade_count']):+d}"
+        )
+    if int(best_return["round"]) != round_number:
+        lines.append(
+            "next_hint: current search is improving risk/score at the cost of return; "
+            "prefer the next change that can recover return while keeping drawdown controlled."
+        )
+    else:
+        lines.append(
+            "next_hint: this is the return leader; test one risk control at a time without reducing exposure first."
+        )
+    return lines
+
+
+def previous_results(data_dir: Path, round_number: int) -> list[dict[str, object]]:
+    results: list[dict[str, object]] = []
+    for path in sorted(data_dir.iterdir()):
+        metrics_path = path / "metrics.json"
+        if not path.is_dir() or not path.name.isdigit() or int(path.name) >= round_number or not metrics_path.exists():
+            continue
+        payload = json.loads(metrics_path.read_text(encoding="utf-8"))
+        results.append({"round": int(payload["round"]), "metrics": payload["metrics"]})
+    return results
+
+
+def busiest_trade_year(trades: list[dict[str, object]]) -> tuple[str, int]:
+    counts: dict[str, int] = {}
+    for trade in trades:
+        year = str(trade["date"])[:4]
+        counts[year] = counts.get(year, 0) + 1
+    if not counts:
+        return "none", 0
+    return max(counts.items(), key=lambda item: item[1])
+
+
+def worst_drawdown(rows: list[dict[str, object]]) -> tuple[float, str, str]:
+    peak = float(rows[0]["equity"])
+    peak_date = str(rows[0]["date"])
+    worst = (0.0, peak_date, peak_date)
+    for row in rows:
+        value = float(row["equity"])
+        if value > peak:
+            peak = value
+            peak_date = str(row["date"])
+        drawdown = value / peak - 1.0
+        if drawdown < worst[0]:
+            worst = (drawdown, peak_date, str(row["date"]))
+    return worst
+
+
+def pct(value: object) -> str:
+    return f"{float(value) * 100:.2f}%"
+
+
+def delta_pct(now: object, before: object) -> str:
+    return f"{(float(now) - float(before)) * 100:+.2f}pp"
 
 
 def main() -> None:
@@ -286,18 +393,7 @@ def main() -> None:
     (round_dir / "params.json").write_text(json.dumps(params.__dict__, indent=2), encoding="utf-8")
     (round_dir / "metrics.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
     (round_dir / "summary.txt").write_text(
-        "\n".join(
-            [
-                f"round: {round_number:04d}",
-                f"annualized_return: {result['annualized_return']:.6f}",
-                f"max_drawdown: {result['max_drawdown']:.6f}",
-                f"sharpe: {result['sharpe']:.6f}",
-                f"average_exposure: {result['average_exposure']:.6f}",
-                f"trade_count: {result['trade_count']}",
-                f"composite_score: {result['composite_score']:.6f}",
-            ]
-        )
-        + "\n",
+        "\n".join(summary_lines(data_dir, round_number, params, rows, trades, result)) + "\n",
         encoding="utf-8",
     )
     update_experiments_csv(data_dir)
