@@ -1,0 +1,6 @@
+round: 0001
+params: ma=10, momentum=12, weights=1.0/0.7/0.3, vol_cut=0.2
+observation: Initial run provides a baseline. 11.8% return is okay, but 29.6% drawdown (GFC) is significant.
+trade_view: 95 trades, exposure 73.6%, well-distributed across years.
+conclusion: Baseline is stable. Next round will test increasing low/mid weights to increase average exposure and potentially improve returns.
+next_hint: Test if increasing exposure improves annualized return without excessively increasing max drawdown.

@@ -1,0 +1,8 @@
+round: 0002
+params: ma=10, momentum=12, weights=1.0/0.8/0.5, vol_cut=0.2
+return_view: annualized=12.33%; best_return_round=0002 (12.33%)
+risk_view: max_drawdown=-36.74% from 2007-10-11 to 2008-11-20; average_exposure=0.783
+trade_view: 94 changes; busiest_year=2008 (9 changes)
+vs_previous: return +0.50pp, drawdown -7.18pp, trades -1
+observation: Increasing mid/low weights improved return slightly but significantly worsened the 2008 drawdown. The return gain doesn't justify the risk increase.
+next_step: Keep weights of 0002 but increase vol_cut to 0.25 to mitigate high-volatility drawdowns.
