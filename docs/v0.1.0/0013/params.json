@@ -1,0 +1,13 @@
+{
+  "ma_months": 10,
+  "momentum_months": 8,
+  "high_weight": 1.0,
+  "mid_weight": 0.7,
+  "low_weight": 0.1,
+  "vol_window_short": 20,
+  "vol_window_long": 60,
+  "vol_lookback": 252,
+  "vol_quantile": 0.8,
+  "vol_cut": 0.7,
+  "trading_days": 252
+}

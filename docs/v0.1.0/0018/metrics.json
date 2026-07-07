@@ -1,0 +1,28 @@
+{
+  "round": 18,
+  "params": {
+    "ma_months": 8,
+    "momentum_months": 7,
+    "high_weight": 1.0,
+    "mid_weight": 0.7,
+    "low_weight": 0.0,
+    "vol_window_short": 20,
+    "vol_window_long": 60,
+    "vol_lookback": 252,
+    "vol_quantile": 0.8,
+    "vol_cut": 0.7,
+    "trading_days": 252
+  },
+  "metrics": {
+    "start_date": "2004-02-11",
+    "end_date": "2026-06-30",
+    "bars": 5505,
+    "total_return": 7.4900582806991185,
+    "annualized_return": 0.10288458612837403,
+    "max_drawdown": -0.17258261539872155,
+    "sharpe": 0.8509698910275153,
+    "average_exposure": 0.6023069936421435,
+    "trade_count": 80,
+    "composite_score": -0.06460104016759598
+  }
+}

@@ -1,0 +1,7 @@
+round: 0021
+annualized_return: 0.102372
+max_drawdown: -0.183914
+sharpe: 0.860157
+average_exposure: 0.591935
+trade_count: 74
+composite_score: -0.069526
