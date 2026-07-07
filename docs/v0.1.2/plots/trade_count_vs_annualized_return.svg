@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="620" viewBox="0 0 900 620" role="img">
+<style>
+  svg { background: #faf7ef; color: #1f2933; font-family: ui-sans-serif, system-ui, sans-serif; }
+  .title { font-size: 22px; font-weight: 700; fill: #1f2933; }
+  .label { font-size: 15px; font-weight: 650; fill: #344054; }
+  .tick { font-size: 12px; fill: #667085; }
+  .plot-bg { fill: #fffdf8; stroke: #d0d5dd; }
+  .grid { stroke: #e4e7ec; stroke-width: 1; }
+  .axis { stroke: #475467; stroke-width: 1.4; }
+  .line { fill: none; stroke: #0f766e; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+  .point { fill: #0f766e; stroke: #ffffff; stroke-width: 1.5; }
+  .round-label { font-size: 11px; fill: #475467; }
+</style>
+<text x="450.0" y="34" text-anchor="middle" class="title">trade_count vs annualized_return</text>
+<rect x="96" y="64" width="764" height="464" class="plot-bg"/>
+<line x1="96.00" y1="64" x2="96.00" y2="528" class="grid"/>
+<text x="96.00" y="556" text-anchor="middle" class="tick">94</text>
+<line x1="287.00" y1="64" x2="287.00" y2="528" class="grid"/>
+<text x="287.00" y="556" text-anchor="middle" class="tick">94</text>
+<line x1="478.00" y1="64" x2="478.00" y2="528" class="grid"/>
+<text x="478.00" y="556" text-anchor="middle" class="tick">94</text>
+<line x1="669.00" y1="64" x2="669.00" y2="528" class="grid"/>
+<text x="669.00" y="556" text-anchor="middle" class="tick">95</text>
+<line x1="860.00" y1="64" x2="860.00" y2="528" class="grid"/>
+<text x="860.00" y="556" text-anchor="middle" class="tick">95</text>
+<line x1="96" y1="528.00" x2="860" y2="528.00" class="grid"/>
+<text x="82" y="532.00" text-anchor="end" class="tick">11.8%</text>
+<line x1="96" y1="412.00" x2="860" y2="412.00" class="grid"/>
+<text x="82" y="416.00" text-anchor="end" class="tick">12.0%</text>
+<line x1="96" y1="296.00" x2="860" y2="296.00" class="grid"/>
+<text x="82" y="300.00" text-anchor="end" class="tick">12.2%</text>
+<line x1="96" y1="180.00" x2="860" y2="180.00" class="grid"/>
+<text x="82" y="184.00" text-anchor="end" class="tick">12.4%</text>
+<line x1="96" y1="64.00" x2="860" y2="64.00" class="grid"/>
+<text x="82" y="68.00" text-anchor="end" class="tick">12.7%</text>
+<line x1="96" y1="528" x2="860" y2="528" class="axis"/>
+<line x1="96" y1="64" x2="96" y2="528" class="axis"/>
+<text x="450.0" y="592" text-anchor="middle" class="label">trade_count</text>
+<text transform="translate(28 296.0) rotate(-90)" text-anchor="middle" class="label">annualized_return</text>
+<circle cx="807.31" cy="489.33" r="5.5" class="point"><title>round 0001
+trade_count: 95
+annualized_return: 11.8%</title></circle>
+<text x="815.31" y="481.33" class="round-label">0001</text>
+<circle cx="148.69" cy="229.96" r="5.5" class="point"><title>round 0002
+trade_count: 94
+annualized_return: 12.3%</title></circle>
+<text x="156.69" y="221.96" class="round-label">0002</text>
+<circle cx="807.31" cy="288.12" r="5.5" class="point"><title>round 0003
+trade_count: 95
+annualized_return: 12.2%</title></circle>
+<text x="815.31" y="280.12" class="round-label">0003</text>
+<circle cx="807.31" cy="194.09" r="5.5" class="point"><title>round 0004
+trade_count: 95
+annualized_return: 12.4%</title></circle>
+<text x="815.31" y="186.09" class="round-label">0004</text>
+<circle cx="807.31" cy="102.67" r="5.5" class="point"><title>round 0005
+trade_count: 95
+annualized_return: 12.6%</title></circle>
+<text x="815.31" y="94.67" class="round-label">0005</text>
+<circle cx="807.31" cy="160.64" r="5.5" class="point"><title>round 0006
+trade_count: 95
+annualized_return: 12.5%</title></circle>
+<text x="815.31" y="152.64" class="round-label">0006</text>
+</svg>
