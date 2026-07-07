@@ -1,0 +1,7 @@
+round: 0005
+params: ma=10, momentum=12, weights=1.0/0.7/0.3, vol_cut=0.6
+return_view: annualized=10.58%; best_return_round=0001 (11.84%)
+risk_view: max_drawdown=-23.63% from 2025-01-07 to 2025-04-09; average_exposure=0.641
+trade_view: 95 changes; busiest_year=2008 (9 changes)
+vs_previous: return -0.35pp, drawdown +0.55pp, trades +0
+next_hint: current search is improving risk/score at the cost of return; prefer the next change that can recover return while keeping drawdown controlled.

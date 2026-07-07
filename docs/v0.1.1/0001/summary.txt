@@ -1,0 +1,6 @@
+round: 0001
+params: ma=10, momentum=12, weights=1.0/0.7/0.3, vol_cut=0.2
+return_view: annualized=11.84%; best_return_round=0001 (11.84%)
+risk_view: max_drawdown=-29.56% from 2007-10-11 to 2008-11-20; average_exposure=0.736
+trade_view: 95 changes; busiest_year=2008 (9 changes)
+next_hint: this is the return leader; test one risk control at a time without reducing exposure first.

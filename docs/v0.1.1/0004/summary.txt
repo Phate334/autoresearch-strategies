@@ -1,0 +1,7 @@
+round: 0004
+params: ma=10, momentum=12, weights=1.0/0.7/0.3, vol_cut=0.5
+return_view: annualized=10.93%; best_return_round=0001 (11.84%)
+risk_view: max_drawdown=-24.18% from 2007-07-24 to 2008-09-18; average_exposure=0.663
+trade_view: 95 changes; busiest_year=2008 (9 changes)
+vs_previous: return -0.34pp, drawdown +0.96pp, trades +0
+next_hint: current search is improving risk/score at the cost of return; prefer the next change that can recover return while keeping drawdown controlled.
